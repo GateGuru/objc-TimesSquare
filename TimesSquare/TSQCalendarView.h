@@ -9,6 +9,15 @@
 
 #import <UIKit/UIKit.h>
 
+typedef enum {
+    TSQCalendarSelectionModeDay = 0,
+    TSQCalendarSelectionModeDateRange
+} TSQCalendarSelectionMode;
+
+typedef NS_ENUM(NSInteger, TSQCalendarError){
+    TSQCalendarErrorAttemptToSelectDisabledDate = 0,
+    TSQCalendarErrorSelectionMaxRange
+};
 
 @protocol TSQCalendarViewDelegate;
 
@@ -42,6 +51,39 @@
  */
 @property (nonatomic, strong) NSDate *selectedDate;
 
+/** The currently-selected dates on the calendar.
+  
+ This property is read-only.
+ */
+@property (nonatomic, readonly) NSArray *selectedDates;
+
+/** The selection mode used for the calendar.
+ 
+ Defaults to `TSQCalendarSelectionModeDay`, which is the normal, single date selection.
+ Set to `TSQCalendarSelectionModeDateRange` to allow selecting a range of dates.
+ */
+@property (nonatomic, assign) TSQCalendarSelectionMode selectionMode;
+
+/** The start date of the currently-selected date range on the calendar.
+ 
+ Set this property to any `NSDate`; `TSQCalendarView` will only look at the month, day, and year.
+ You can read and write this property.
+ */
+@property (nonatomic, strong) NSDate *selectedStartDate;
+
+/** The end date of the currently-selected date range on the calendar.
+ 
+ Set this property to any `NSDate`; `TSQCalendarView` will only look at the month, day, and year.
+ You can read and write this property.
+ */
+@property (nonatomic, strong) NSDate *selectedEndDate;
+
+/** 
+ If there's an error after a date was selected, store it here
+ */
+@property (nonatomic) TSQCalendarError *selectionError;
+
+
 /** @name Calendar Configuration */
 
 /** The calendar type to use when displaying.
@@ -71,6 +113,15 @@
  */
 @property (nonatomic) BOOL pagingEnabled;
 
+/** Whether or not to show heading as part of paged scrolling
+ */
+
+@property (nonatomic) BOOL displayHeaderWhenPaging;
+
+/** Whether or not the calendar is scrolling
+ */
+@property (nonatomic, readonly) BOOL isScrolling;
+
 /** The distance from the edges of the view to where the content begins.
  
  This property is equivalent to the one defined on `UIScrollView`.
@@ -97,12 +148,20 @@
  */
 @property (nonatomic, strong) Class rowCellClass;
 
-/** Scrolls the receiver until the specified date month is completely visible.
+/** Scrolls the receiver until the specified date month is completely visible at the top of the view.
 
  @param date A date that identifies the month that will be visible.
  @param animated YES if you want to animate the change in position, NO if it should be immediate.
  */
 - (void)scrollToDate:(NSDate *)date animated:(BOOL)animated;
+
+/** Scrolls the receiver until the specified date month is completely visible.
+ 
+ @param date A date that identifies the month that will be visible.
+ @param animated YES if you want to animate the change in position, NO if it should be immediate.
+ @param scrollPosition The scroll position you want the view to use.
+ */
+- (void)scrollToDate:(NSDate *)date animated:(BOOL)animated atScrollPosition:(UITableViewScrollPosition)scrollPosition;
 
 @end
 
@@ -130,5 +189,34 @@
  @param date Midnight on the date being selected.
  */
 - (void)calendarView:(TSQCalendarView *)calendarView didSelectDate:(NSDate *)date;
+
+/** Tells the delegate that a start date was selected for a range of dates.
+ 
+ @param calendarView The calendar view that is selecting a date.
+ @param date Midnight on the date being selected.
+ */
+- (void)calendarView:(TSQCalendarView *)calendarView didSelectStartDate:(NSDate *)date;
+
+/** Tells the delegate that an end date was selected for a range of dates.
+ 
+ @param calendarView The calendar view that is selecting a date.
+ @param date Midnight on the date being selected.
+ */
+- (void)calendarView:(TSQCalendarView *)calendarView didSelectEndDate:(NSDate *)date;
+
+/** Tells the delegate that selected dates has been resetted.
+ 
+ @param calendarView The calendar view that is selecting a date.
+ */
+- (void)resetSelectedDatesForCalendarView:(TSQCalendarView *)calendarView;
+
+- (void)calendarView:(TSQCalendarView *)calendarView didFailToSelectDateWithError:(TSQCalendarError)error;
+
+/** Tells the delegate that a start date was selected for a range of dates.
+ 
+ @param calendarView The calendar view that is selecting a date.
+ @param date Midnight on the date being selected.
+ */
+
 
 @end

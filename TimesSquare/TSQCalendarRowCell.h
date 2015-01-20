@@ -31,6 +31,18 @@
  */
 @property (nonatomic, weak, readonly) UIImage *selectedBackgroundImage;
 
+/** The background image for the first day of the selected range.
+ */
+@property (nonatomic, weak, readonly) UIImage *selectedFirstDayOfRangeBackgroundImage;
+
+/** The background image for the last day of the selected range.
+ */
+@property (nonatomic, weak, readonly) UIImage *selectedLastDayOfRangeBackgroundImage;
+
+/** The background image for the middle days of the selected range.
+ */
+@property (nonatomic, weak, readonly) UIImage *selectedMiddleDaysOfRangeBackgroundImage;
+
 /** The background image for a day that's "today".
  
  This is dark gray in the system's built-in Calendar app. You probably want to use a stretchable image.
@@ -42,6 +54,14 @@
  These are the trailing days from the previous month or the leading days from the following month. This can be `nil`.
  */
 @property (nonatomic, weak, readonly) UIImage *notThisMonthBackgroundImage;
+
+/** An array of `UIButton` objects wherein each button represents a day on the calendar.
+ */
+@property (nonatomic, strong, readonly) NSArray *dayButtons;
+
+/** An array of `UIButton` objects wherein each button represents a day that is outside of the current month being displayed on the calendar.
+ */
+@property (nonatomic, strong, readonly) NSArray *notThisMonthButtons;
 
 /** @name State Properties Set by Calendar View */
 
@@ -64,5 +84,13 @@
  @param date The date to select, or nil to deselect all columns.
  */
 - (void)selectColumnForDate:(NSDate *)date;
+
+/** Method to select a specific date within the week.
+ 
+ This is funneled through and called by the calendar view, to facilitate deselection of other rows.
+ 
+ @param date The date to select, or nil to deselect all columns.
+ */
+- (void)deselectColumnForDate:(NSDate *)date;
 
 @end
